@@ -20,7 +20,7 @@ tUBV = zeros(ntrials,5);
 tQB  = zeros(ntrials,5); 
 
 %% Part 1: fix size and sparsity, vary the rank
-for itn = 2
+for itn = 1:3
     fprintf("Variation: %d\n", itn); 
     for i = 1:5
         fprintf("Step: %d\n", i); 

@@ -41,11 +41,15 @@ for itn = 1:2
 
     tic
     [U,B,V] = randUBV(A,tstop,b);
-    fprintf("U error: %.4e\n", norm(U'*U-eye(size(U,2)))); 
     t1 = toc;
+    rel_err = norm(A-U*B*V','fro')/norm(A,'fro'); 
+    fprintf("Approximation error: %.4e\n", rel_err); 
+    fprintf("U error: %.4e\n", norm(U'*U-eye(size(U,2)))); 
     tic
-    [Ub,S,Vb] = svd(B,'econ'); 
+    %[Ub,S,Vb] = svd(B,'econ'); 
+    [Ub,S,Vb] = eigSVD(B); 
     s  = diag(S); 
+    s  = sort(s,'descend');
     r  = length(s);  
     err= sqrt(1 - cumsum(s.^2)/normAf^2); 
     rT = find(err<tol,1,'first');
@@ -71,8 +75,10 @@ for P = 0:2
     t1 = toc; 
     
     tic
-    [Ub,S,Vb] = svd(B,'econ'); 
+    %[Ub,S,Vb] = svd(B,'econ'); 
+    [Ub,S,Vb] = eigSVD(B); 
     s  = diag(S); 
+    s  = sort(s,'descend');
     r  = length(s);  
     errqb = sqrt(1 - cumsum(s.^2)/normAf^2); 
     rT = find(errqb<tol,1,'first'); 
@@ -86,4 +92,22 @@ for P = 0:2
     fprintf("Initial rank: %d\n", r); 
     fprintf("Truncated rank: %d\n\n", rT);
 
+end
+
+function [U,S,V] = eigSVD(A)
+    tflag = false;
+    if size(A,1)<size(A,2)
+        A = A'; 
+        tflag = true; 
+    end
+    B = A'*A; 
+    [V,D] = eig(B,'vector'); 
+    S = sqrt(D); 
+    U = A*(V./S'); 
+    if tflag
+        tmp = U; 
+        U = V; 
+        V = tmp; 
+    end
+    S = diag(S); 
 end

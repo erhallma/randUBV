@@ -32,6 +32,28 @@ A = (Ua.*sa)*Va';
 %% UBV
 [U,B,V,errUBV,defl] = randUBV_k(A,k,b); 
 
+
+%% accuracy of error indicator
+fprintf("i = %d\n", i)
+pred_err = errUBV(end); 
+act_err = norm(A-U*B*V','fro'); 
+fprintf("Deflations: %d\n", defl); 
+X = U'*U - eye(size(U,2)); 
+loc_err = 0; 
+for j = 0:k/b-1
+    xj = X(j*b+1:j*b+b,j*b+1:j*b+b); 
+    loc_err = max(loc_err,norm(xj));
+    if j < k/b-1
+        xj = X(j*b+1:j*b+b,j*b+b+1:j*b+2*b);
+        loc_err = max(loc_err,norm(xj)); 
+    end
+end
+fprintf("Total Loss of Orthogonality in U: %.4e\n", norm(X)); 
+fprintf("Local Loss of Orthogonality in U: %.4e\n", loc_err);
+fprintf("Squared predicted error: %.4e\n", pred_err^2); 
+fprintf("Absolute squared difference: %.4e\n", abs(pred_err^2-act_err^2)); 
+fprintf("Theoretical bound: %.4e\n", 4*loc_err*norm(A,'fro')^2); 
+
 %% QB, P=0
 [Q0, B0, err0,~,err_id] = randQB_EI_k(A, k, b, 0);  
 
