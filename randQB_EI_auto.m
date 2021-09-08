@@ -21,8 +21,8 @@ function [Q, B, k] = randQB_EI_auto(A, relerr, b, P)
     for i=1:maxiter
         Omg = randn(n, b);
         Y = A * Omg - (Q * (B * Omg));
-        [Qi, ~] = qr(Y, 0);
         
+        [Qi, ~] = qr(Y, 0);
         for j = 1:P
             [Qi, ~] = qr(A'*Qi - B'*(Q'*Qi), 0);  % can skip orthonormalization for small b. 
             [Qi, ~] = qr(A*Qi - Q*(B*Qi), 0);
